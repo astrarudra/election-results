@@ -167,6 +167,10 @@ function roundPercent(result: ConstituencyResult) {
   return Math.max(0, Math.min(value, 100));
 }
 
+function partyFilterValue(result: ConstituencyResult) {
+  return result.leadingPartyCode ?? result.leadingPartyName ?? "unknown";
+}
+
 function OverallCharts({ state }: { state: ElectionState }) {
   const topParties = state.parties.slice(0, 8);
   const maxSeats = Math.max(...topParties.map((party) => party.leading + party.won), 1);
@@ -411,12 +415,14 @@ function ConstituencyList({
   results,
   search,
   filter,
+  partyFilter,
   onOpen,
   detailsLoading
 }: {
   results: ConstituencyResult[];
   search: string;
   filter: FilterMode;
+  partyFilter: string;
   onOpen: (result: ConstituencyResult) => void;
   detailsLoading: boolean;
 }) {
@@ -451,6 +457,7 @@ function ConstituencyList({
           return true;
       }
     })
+    .filter((result) => partyFilter === "all" || partyFilterValue(result) === partyFilter)
     .sort(compareBattleResults);
 
   return (
@@ -611,6 +618,7 @@ export function App() {
   const [selectedStateCode, setSelectedStateCode] = useState("");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterMode>("all");
+  const [partyFilter, setPartyFilter] = useState("all");
   const [selectedResult, setSelectedResult] = useState<ConstituencyResult>();
 
   const states = query.data?.states ?? [];
@@ -634,6 +642,13 @@ export function App() {
       setSelectedStateCode(defaultState.stateCode);
     }
   }, [selectedStateCode, states]);
+
+  useEffect(() => {
+    if (partyFilter === "all" || !selectedState) return;
+    if (!selectedState.parties.some((party) => party.code === partyFilter)) {
+      setPartyFilter("all");
+    }
+  }, [partyFilter, selectedState]);
 
   return (
     <main>
@@ -728,12 +743,28 @@ export function App() {
                   </button>
                 ))}
               </div>
+              <label className="party-filter">
+                <span>Party</span>
+                <select
+                  value={partyFilter}
+                  onChange={(event) => setPartyFilter(event.target.value)}
+                  aria-label="Filter constituencies by party"
+                >
+                  <option value="all">All parties</option>
+                  {selectedState.parties.map((party) => (
+                    <option value={party.code} key={party.code}>
+                      {party.code} ({party.leading + party.won})
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             <ConstituencyList
               results={selectedState.constituencies}
               search={search}
               filter={filter}
+              partyFilter={partyFilter}
               onOpen={setSelectedResult}
               detailsLoading={detailsLoading}
             />

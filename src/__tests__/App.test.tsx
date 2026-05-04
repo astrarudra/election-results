@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "../App";
 
@@ -18,7 +18,7 @@ describe("App", () => {
             ok: true,
             text: async () => `
               <table class="table">
-                <thead><tr><th colspan="9">Status Known For 1 out of 1 Constituencies</th></tr></thead>
+                <thead><tr><th colspan="9">Status Known For 1 out of 2 Constituencies</th></tr></thead>
                 <tbody>
                   <tr>
                     <td>ALIPURDUARS</td><td>12</td><td>PARITOSH DAS</td>
@@ -35,7 +35,10 @@ describe("App", () => {
           ok: true,
           json: async () => ({
             S25: {
-              chartData: [["BJP", "S25", 12, "PARITOSH DAS", "#ff944d"]],
+              chartData: [
+                ["BJP", "S25", 12, "PARITOSH DAS", "#ff944d"],
+                ["AITC", "S25", 13, "AITC CANDIDATE", "#05a"]
+              ],
               tableData: []
             }
           })
@@ -58,7 +61,14 @@ describe("App", () => {
     expect(screen.getByText("Race pressure")).toBeInTheDocument();
     expect(screen.getByText("Margin spread")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Search seat, candidate, party")).toBeInTheDocument();
+    const partySelect = screen.getByLabelText("Filter constituencies by party");
+    expect(partySelect).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "BJP (1)" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "AITC (1)" })).toBeInTheDocument();
     expect((await screen.findAllByText("Round 2/22")).length).toBeGreaterThan(0);
-    expect(await screen.findByText("Status known 1/1")).toBeInTheDocument();
+    fireEvent.change(partySelect, { target: { value: "AITC" } });
+    expect(await screen.findByText("AITC CANDIDATE")).toBeInTheDocument();
+    expect(screen.queryByText("ALIPURDUARS")).not.toBeInTheDocument();
+    expect(await screen.findByText("Status known 1/2")).toBeInTheDocument();
   });
 });

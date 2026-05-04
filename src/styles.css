@@ -505,6 +505,34 @@ footer a:hover {
   color: #165c43;
 }
 
+.party-filter {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  border: 1px solid #cfc8bd;
+  border-radius: 8px;
+  background: #fff;
+  padding: 7px 10px;
+}
+
+.party-filter span {
+  color: #667085;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.party-filter select {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #172026;
+  font-weight: 800;
+}
+
 .race-list {
   display: grid;
   gap: 8px;
