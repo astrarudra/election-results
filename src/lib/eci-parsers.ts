@@ -199,6 +199,14 @@ export function parseStatewiseHtml(html: string, stateCode: string): HtmlResult 
     const trailingPartyName = nestedPartyText(cells[5]);
     const leadingPartyCode = partyCodeFromName(leadingPartyName);
     const round = parseRound(directText(cells[7]));
+    const rawStatus = normalizeStatus(directText(cells[8]));
+    const status =
+      round.roundCurrent !== undefined &&
+      round.roundTotal !== undefined &&
+      round.roundTotal > 0 &&
+      round.roundCurrent >= round.roundTotal
+        ? "Won"
+        : rawStatus;
 
     return [
       {
@@ -213,7 +221,7 @@ export function parseStatewiseHtml(html: string, stateCode: string): HtmlResult 
         trailingPartyCode: partyCodeFromName(trailingPartyName),
         margin: parseNumber(directText(cells[6])),
         ...round,
-        status: normalizeStatus(directText(cells[8]))
+        status
       }
     ];
   });

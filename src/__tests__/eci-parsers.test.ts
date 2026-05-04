@@ -108,6 +108,19 @@ describe("ECI parsers", () => {
     });
   });
 
+  it("treats fully counted rounds as won even when ECI status still says progress", () => {
+    const parsed = parseStatewiseHtml(
+      htmlSnippet.replace("2/22", "18/18"),
+      "S25"
+    );
+
+    expect(parsed.constituencies[0]).toMatchObject({
+      roundCurrent: 18,
+      roundTotal: 18,
+      status: "Won"
+    });
+  });
+
   it("merges HTML detail into JSON rows and keeps party colors", () => {
     const [summaryState] = parseSummaryJson(summaryPayload, "https://example.test/live.json");
     const merged = mergeHtmlIntoState(summaryState, parseStatewiseHtml(htmlSnippet, "S25"));
