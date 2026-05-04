@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Election Results Live preview">
+  <rect width="1200" height="630" fill="#f6f3ed"/>
+  <rect x="56" y="54" width="1088" height="522" rx="24" fill="#ffffff" stroke="#d9d5cb" stroke-width="2"/>
+  <text x="92" y="122" fill="#667085" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="0">ASSEMBLY RESULTS LIVE</text>
+  <text x="92" y="188" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="850" letter-spacing="0">Election Results Live</text>
+  <text x="92" y="238" fill="#4d5963" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="600">ECI trends, party tallies, round progress, and close battles</text>
+
+  <rect x="92" y="304" width="436" height="162" rx="18" fill="#fbfaf7" stroke="#ded8cf"/>
+  <text x="124" y="354" fill="#667085" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">COUNTING PROGRESS</text>
+  <text x="124" y="410" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="850">Round 2389 / 5375</text>
+  <rect x="124" y="434" width="360" height="16" rx="8" fill="#e4ded4"/>
+  <rect x="124" y="434" width="158" height="16" rx="8" fill="#1f7a5a"/>
+
+  <rect x="574" y="304" width="478" height="162" rx="18" fill="#fbfaf7" stroke="#ded8cf"/>
+  <text x="606" y="354" fill="#667085" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">PARTY TALLY</text>
+  <rect x="606" y="384" width="350" height="18" rx="9" fill="#e4ded4"/>
+  <rect x="606" y="384" width="252" height="18" rx="9" fill="#ff8a3d"/>
+  <text x="976" y="404" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="850">BJP</text>
+  <rect x="606" y="424" width="350" height="18" rx="9" fill="#e4ded4"/>
+  <rect x="606" y="424" width="128" height="18" rx="9" fill="#b8c4df"/>
+  <text x="976" y="444" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="850">AITC</text>
+
+  <text x="92" y="528" fill="#667085" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Data from results.eci.gov.in. Unofficial dashboard by Rudra Roy.</text>
+</svg>

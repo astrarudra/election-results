@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Election Results Live">
+  <rect width="180" height="180" rx="40" fill="#f6f3ed"/>
+  <rect x="30" y="36" width="120" height="108" rx="22" fill="#ffffff" stroke="#1f7a5a" stroke-width="10"/>
+  <path d="M58 86h15v34H58z" fill="#ff8a3d"/>
+  <path d="M82 66h15v54H82z" fill="#1f7a5a"/>
+  <path d="M106 50h15v70h-15z" fill="#b8c4df"/>
+  <path d="M50 133h80" stroke="#172026" stroke-width="10" stroke-linecap="round"/>
+</svg>
