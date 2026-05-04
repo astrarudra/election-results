@@ -700,7 +700,6 @@ export function App() {
                 onClick={() => setSelectedStateCode(state.stateCode)}
               >
                 <span>{state.stateName ?? state.stateCode}</span>
-                <b>{state.countingProgressPct}%</b>
               </button>
             ))}
           </nav>

@@ -847,7 +847,7 @@ footer {
 
   .state-rail button {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 8px;
     width: 100%;
     padding: 11px;
