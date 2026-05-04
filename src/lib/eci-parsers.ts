@@ -197,6 +197,7 @@ export function parseStatewiseHtml(html: string, stateCode: string): HtmlResult 
 
     const leadingPartyName = nestedPartyText(cells[3]);
     const trailingPartyName = nestedPartyText(cells[5]);
+    const leadingPartyCode = partyCodeFromName(leadingPartyName);
     const round = parseRound(directText(cells[7]));
 
     return [
@@ -205,7 +206,8 @@ export function parseStatewiseHtml(html: string, stateCode: string): HtmlResult 
         acName,
         leadingCandidate: directText(cells[2]) || undefined,
         leadingPartyName: leadingPartyName || undefined,
-        leadingPartyCode: partyCodeFromName(leadingPartyName),
+        leadingPartyCode,
+        partyIconUrl: getPartyIconUrl(leadingPartyCode, leadingPartyName),
         trailingCandidate: directText(cells[4]) || undefined,
         trailingPartyName: trailingPartyName || undefined,
         trailingPartyCode: partyCodeFromName(trailingPartyName),
@@ -293,15 +295,27 @@ export function mergeHtmlIntoState(state: ElectionState, htmlResult?: HtmlResult
   );
   const mergedHtmlResults = htmlResult.constituencies.map((htmlConstituency) => {
     const jsonConstituency = jsonByKey.get(constituencyKey(htmlConstituency));
+    const leadingPartyCode =
+      htmlConstituency.leadingPartyCode ?? jsonConstituency?.leadingPartyCode;
+    const leadingPartyName =
+      htmlConstituency.leadingPartyName ?? jsonConstituency?.leadingPartyName;
+    const jsonPartyStillMatches =
+      jsonConstituency?.leadingPartyCode === leadingPartyCode ||
+      (!jsonConstituency?.leadingPartyCode &&
+        jsonConstituency?.leadingPartyName === leadingPartyName);
+
     return {
       ...jsonConstituency,
       ...htmlConstituency,
-      leadingPartyCode: htmlConstituency.leadingPartyCode ?? jsonConstituency?.leadingPartyCode,
+      leadingPartyCode,
+      leadingPartyName,
       trailingPartyCode: htmlConstituency.trailingPartyCode ?? jsonConstituency?.trailingPartyCode,
-      color: jsonConstituency?.color ?? htmlConstituency.color,
+      color: jsonPartyStillMatches
+        ? (jsonConstituency?.color ?? htmlConstituency.color)
+        : htmlConstituency.color,
       partyIconUrl:
-        jsonConstituency?.partyIconUrl ??
-        getPartyIconUrl(htmlConstituency.leadingPartyCode, htmlConstituency.leadingPartyName)
+        getPartyIconUrl(leadingPartyCode, leadingPartyName) ??
+        (jsonPartyStillMatches ? jsonConstituency?.partyIconUrl : undefined)
     };
   });
 

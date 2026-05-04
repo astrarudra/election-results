@@ -12,7 +12,7 @@ describe("party icon registry", () => {
   it("resolves icon URLs and codes from party names", () => {
     expect(getPartyCodeFromName("All India Trinamool Congress")).toBe("AITC");
     expect(getPartyIconUrl(undefined, "All India Trinamool Congress")).toContain(
-      "All_India_Trinamool_Congress_symbol_2021.svg"
+      "All_India_Trinamool_Congress_logo.svg"
     );
   });
 });

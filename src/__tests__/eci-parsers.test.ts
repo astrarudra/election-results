@@ -71,7 +71,7 @@ describe("ECI parsers", () => {
       partyIconUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Logo_of_the_Bharatiya_Janata_Party.svg"
     });
     expect(state.parties.find((party) => party.code === "AITC")?.iconUrl).toContain(
-      "All_India_Trinamool_Congress_symbol_2021.svg"
+      "All_India_Trinamool_Congress_logo.svg"
     );
   });
 
@@ -107,6 +107,26 @@ describe("ECI parsers", () => {
       leadingPartyCode: "BJP",
       color: "#ff944d"
     });
+  });
+
+  it("recomputes icons from HTML leaders when summary party data is stale", () => {
+    const [summaryState] = parseSummaryJson(
+      {
+        S25: {
+          chartData: [["AITC", "S25", 12, "STALE LEADER", "#05a"]],
+          tableData: []
+        }
+      },
+      "https://example.test/live.json"
+    );
+    const merged = mergeHtmlIntoState(summaryState, parseStatewiseHtml(htmlSnippet, "S25"));
+    const result = merged.constituencies.find((constituency) => constituency.acNo === 12);
+
+    expect(result).toMatchObject({
+      leadingPartyCode: "BJP",
+      partyIconUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Logo_of_the_Bharatiya_Janata_Party.svg"
+    });
+    expect(result?.partyIconUrl).not.toContain("Trinamool");
   });
 
   it("discovers and combines paginated statewise detail pages", () => {

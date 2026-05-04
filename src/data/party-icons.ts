@@ -1,7 +1,7 @@
 const PARTY_ICON_URLS: Record<string, string> = {
   ADMK: "https://commons.wikimedia.org/wiki/Special:FilePath/Indian_Election_Symbol_Two_Leaves.svg",
   AIADMK: "https://commons.wikimedia.org/wiki/Special:FilePath/Indian_Election_Symbol_Two_Leaves.svg",
-  AITC: "https://commons.wikimedia.org/wiki/Special:FilePath/All_India_Trinamool_Congress_symbol_2021.svg",
+  AITC: "https://commons.wikimedia.org/wiki/Special:FilePath/All_India_Trinamool_Congress_logo.svg",
   BJP: "https://commons.wikimedia.org/wiki/Special:FilePath/Logo_of_the_Bharatiya_Janata_Party.svg",
   CPI: "https://commons.wikimedia.org/wiki/Special:FilePath/Hammer_and_sickle_red_on_transparent.svg",
   "CPI(M)": "https://commons.wikimedia.org/wiki/Special:FilePath/Cpm_election_symbol.svg",
@@ -9,7 +9,7 @@ const PARTY_ICON_URLS: Record<string, string> = {
   INC: "https://commons.wikimedia.org/wiki/Special:FilePath/Indian_National_Congress_hand_logo.svg",
   IUML: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_Indian_Union_Muslim_League.svg",
   PMK: "https://commons.wikimedia.org/wiki/Special:FilePath/PMK.svg",
-  TMC: "https://commons.wikimedia.org/wiki/Special:FilePath/All_India_Trinamool_Congress_symbol_2021.svg"
+  TMC: "https://commons.wikimedia.org/wiki/Special:FilePath/All_India_Trinamool_Congress_logo.svg"
 };
 
 const PARTY_CODE_ALIASES: Record<string, string> = {
