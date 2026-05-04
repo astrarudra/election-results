@@ -374,6 +374,14 @@ footer a:hover {
   text-align: right;
 }
 
+.bar-party {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-weight: 760;
+}
+
 .bar-track {
   height: 9px;
   overflow: hidden;
@@ -416,21 +424,36 @@ footer a:hover {
   background: #98a2b3 !important;
 }
 
-.swatch,
-.party-dot {
+.party-icon {
+  display: inline-grid;
   flex: 0 0 auto;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 50%;
+  color: #fff;
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
-.swatch {
-  width: 14px;
-  height: 14px;
+.party-icon-md {
+  width: 32px;
+  height: 32px;
+  font-size: 0.62rem;
 }
 
-.party-dot {
-  width: 10px;
-  height: 10px;
+.party-icon-sm {
+  width: 24px;
+  height: 24px;
+  font-size: 0.52rem;
+}
+
+.party-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .toolbar {
@@ -628,6 +651,10 @@ footer a:hover {
 .duel span {
   display: block;
   overflow-wrap: anywhere;
+}
+
+.duel .party-icon {
+  margin: 2px 0 9px;
 }
 
 .duel span {

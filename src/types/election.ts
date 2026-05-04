@@ -6,6 +6,7 @@ export type PartyTally = {
   code: string;
   name?: string;
   color: string;
+  iconUrl?: string;
   leading: number;
   won: number;
   trailing?: number;
@@ -27,6 +28,7 @@ export type ConstituencyResult = {
   roundProgressPct?: number;
   status?: ResultStatus;
   color?: string;
+  partyIconUrl?: string;
   battleLevel: BattleLevel;
   leadChangedSinceLastPoll: boolean;
   marginDeltaSinceLastPoll?: number;

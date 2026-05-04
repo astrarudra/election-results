@@ -56,6 +56,45 @@ function battleClass(level: BattleLevel) {
   return `battle battle-${level}`;
 }
 
+function getPartyInitials(code?: string, name?: string) {
+  const label = code || name || "?";
+  if (code && code.length <= 5) return code;
+  const words = label
+    .replace(/[()]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+  const initials = words.map((word) => word[0]).join("").slice(0, 4);
+  return initials || label.slice(0, 4).toUpperCase();
+}
+
+function PartyIcon({
+  code,
+  name,
+  color,
+  iconUrl,
+  size = "md"
+}: {
+  code?: string;
+  name?: string;
+  color?: string;
+  iconUrl?: string;
+  size?: "sm" | "md";
+}) {
+  const label = code || name || "Party";
+  const initials = getPartyInitials(code, name);
+
+  return (
+    <span
+      className={`party-icon party-icon-${size}`}
+      style={{ backgroundColor: color ?? "#667085" }}
+      aria-label={`${label} icon`}
+      title={label}
+    >
+      {iconUrl ? <img src={iconUrl} alt="" /> : initials}
+    </span>
+  );
+}
+
 function ProgressCard({ state }: { state: ElectionState }) {
   const declared = state.constituencies.filter((result) => result.status === "Won").length;
   const inProgress = state.constituencies.filter(
@@ -96,7 +135,7 @@ function PartyStrip({ state }: { state: ElectionState }) {
     <section className="party-strip" aria-label="Party tally">
       {state.parties.slice(0, 12).map((party) => (
         <div className="party-pill" key={party.code}>
-          <span className="swatch" style={{ backgroundColor: party.color }} />
+          <PartyIcon code={party.code} name={party.name} color={party.color} iconUrl={party.iconUrl} />
           <div>
             <strong>{party.code}</strong>
             <span>{party.leading + party.won}</span>
@@ -151,7 +190,16 @@ function OverallCharts({ state }: { state: ElectionState }) {
               const seats = party.leading + party.won;
               return (
                 <div className="bar-row" key={party.code}>
-                  <span>{party.code}</span>
+                  <span className="bar-party">
+                    <PartyIcon
+                      code={party.code}
+                      name={party.name}
+                      color={party.color}
+                      iconUrl={party.iconUrl}
+                      size="sm"
+                    />
+                    {party.code}
+                  </span>
                   <div className="bar-track">
                     <i
                       style={{
@@ -221,7 +269,13 @@ function RaceRow({
         </span>
       </div>
       <div className="candidate-line">
-        <span className="party-dot" style={{ backgroundColor: result.color ?? "#667085" }} />
+        <PartyIcon
+          code={result.leadingPartyCode}
+          name={result.leadingPartyName}
+          color={result.color}
+          iconUrl={result.partyIconUrl}
+          size="sm"
+        />
         <span>
           {result.leadingCandidate ?? "Awaiting update"}{" "}
           <b>{result.leadingPartyCode ?? result.leadingPartyName ?? ""}</b>
@@ -427,11 +481,22 @@ function DetailDrawer({
       <div className="duel">
         <div>
           <p className="eyebrow">Leading</p>
+          <PartyIcon
+            code={result.leadingPartyCode}
+            name={result.leadingPartyName}
+            color={result.color}
+            iconUrl={result.partyIconUrl}
+          />
           <strong>{result.leadingCandidate ?? "Awaiting update"}</strong>
           <span>{result.leadingPartyName ?? result.leadingPartyCode ?? "-"}</span>
         </div>
         <div>
           <p className="eyebrow">Trailing</p>
+          <PartyIcon
+            code={result.trailingPartyCode}
+            name={result.trailingPartyName}
+            color="#8a949c"
+          />
           <strong>{result.trailingCandidate ?? "Awaiting update"}</strong>
           <span>{result.trailingPartyName ?? result.trailingPartyCode ?? "-"}</span>
         </div>
