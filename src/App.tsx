@@ -97,7 +97,7 @@ function PartyIcon({
   );
 }
 
-function ProgressCard({ state }: { state: ElectionState }) {
+function ProgressCard({ state, detailsLoading }: { state: ElectionState; detailsLoading: boolean }) {
   const declared = state.constituencies.filter((result) => result.status === "Won").length;
   const inProgress = state.constituencies.filter(
     (result) => result.status === "Result in Progress"
@@ -108,7 +108,7 @@ function ProgressCard({ state }: { state: ElectionState }) {
     <section className="panel progress-panel">
       <div>
         <p className="eyebrow">Counting progress</p>
-        <h2>{hasRoundData ? `Round ${state.countedRounds}/${state.totalRounds}` : "Round data unavailable"}</h2>
+        <h2>{hasRoundData ? `Round ${state.countedRounds}/${state.totalRounds}` : detailsLoading ? "Loading" : "Round data unavailable"}</h2>
       </div>
       <strong>{state.countingProgressPct}%</strong>
       <div className="progress-track" aria-label="Counting progress">
@@ -309,7 +309,7 @@ function RaceRow({
       )}
       <div className="race-side">
         <span className={battleClass(result.battleLevel)}>
-          {getBattleLabel(result.battleLevel)} - {formatNumber(result.margin)}
+          {getBattleLabel(result.battleLevel)} - Margin {formatNumber(result.margin)}
         </span>
         <div className="round-meter" aria-label={`${roundLabel(result)}, ${progressPct}% complete`}>
           <div>
@@ -719,7 +719,7 @@ export function App() {
               </select>
             </div>
 
-            <ProgressCard state={selectedState} />
+            <ProgressCard state={selectedState} detailsLoading={detailsLoading} />
             <PartyStrip state={selectedState} />
             <OverallCharts state={selectedState} />
 
