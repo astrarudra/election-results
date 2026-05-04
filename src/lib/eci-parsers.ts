@@ -168,7 +168,7 @@ function parseRound(value: string) {
 
 function normalizeStatus(value: string): ResultStatus {
   const text = value.trim();
-  if (/won/i.test(text)) return "Won";
+  if (/(won|declared|elected)/i.test(text)) return "Won";
   if (/progress/i.test(text)) return "Result in Progress";
   return "Unknown";
 }

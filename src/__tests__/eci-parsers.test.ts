@@ -93,6 +93,21 @@ describe("ECI parsers", () => {
     });
   });
 
+  it("treats ECI result declared rows as won seats", () => {
+    const parsed = parseStatewiseHtml(
+      htmlSnippet
+        .replace("Result in Progress", "Result Declared")
+        .replace("2/22", "22/22"),
+      "S25"
+    );
+
+    expect(parsed.constituencies[0]).toMatchObject({
+      roundCurrent: 22,
+      roundTotal: 22,
+      status: "Won"
+    });
+  });
+
   it("merges HTML detail into JSON rows and keeps party colors", () => {
     const [summaryState] = parseSummaryJson(summaryPayload, "https://example.test/live.json");
     const merged = mergeHtmlIntoState(summaryState, parseStatewiseHtml(htmlSnippet, "S25"));
