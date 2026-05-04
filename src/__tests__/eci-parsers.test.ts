@@ -67,8 +67,12 @@ describe("ECI parsers", () => {
       acNo: 12,
       leadingCandidate: "PARITOSH DAS",
       leadingPartyCode: "BJP",
-      color: "#ff944d"
+      color: "#ff944d",
+      partyIconUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Logo_of_the_Bharatiya_Janata_Party.svg"
     });
+    expect(state.parties.find((party) => party.code === "AITC")?.iconUrl).toContain(
+      "All_India_Trinamool_Congress_symbol_2021.svg"
+    );
   });
 
   it("extracts direct result cells without tooltip table pollution", () => {

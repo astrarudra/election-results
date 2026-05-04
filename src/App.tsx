@@ -11,6 +11,7 @@ import {
   X
 } from "lucide-react";
 import { DEFAULT_REFRESH_MS, CUSTOM_SOURCES_KEY } from "./data/sources";
+import { getPartyIconUrl } from "./data/party-icons";
 import { useCountdown } from "./hooks/use-countdown";
 import { useElectionData, useElectionStateDetails } from "./hooks/use-election-data";
 import { compareBattleResults, getBattleLabel } from "./lib/battle";
@@ -82,15 +83,16 @@ function PartyIcon({
 }) {
   const label = code || name || "Party";
   const initials = getPartyInitials(code, name);
+  const resolvedIconUrl = iconUrl ?? getPartyIconUrl(code, name);
 
   return (
     <span
-      className={`party-icon party-icon-${size}`}
-      style={{ backgroundColor: color ?? "#667085" }}
+      className={`party-icon party-icon-${size}${resolvedIconUrl ? " party-icon-image" : ""}`}
+      style={{ backgroundColor: resolvedIconUrl ? "#fff" : color ?? "#667085" }}
       aria-label={`${label} icon`}
       title={label}
     >
-      {iconUrl ? <img src={iconUrl} alt="" /> : initials}
+      {resolvedIconUrl ? <img src={resolvedIconUrl} alt="" /> : initials}
     </span>
   );
 }

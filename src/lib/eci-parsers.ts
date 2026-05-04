@@ -4,6 +4,7 @@ import type {
   PartyTally,
   ResultStatus
 } from "../types/election";
+import { getPartyCodeFromName, getPartyIconUrl } from "../data/party-icons";
 import { STATE_NAMES } from "../data/sources";
 
 type SummaryRow = [string, string, number, string, string];
@@ -20,17 +21,6 @@ export type HtmlResult = {
   statusKnown?: number;
   totalConstituencies?: number;
   constituencies: ConstituencyResult[];
-};
-
-const PARTY_CODE_BY_NAME: Record<string, string> = {
-  "Bharatiya Janata Party": "BJP",
-  "Indian National Congress": "INC",
-  "All India Trinamool Congress": "AITC",
-  "Communist Party of India (Marxist)": "CPI(M)",
-  "Communist Party of India": "CPI",
-  "All India N.R. Congress": "AINRC",
-  "Dravida Munnetra Kazhagam": "DMK",
-  "All India Anna Dravida Munnetra Kazhagam": "ADMK"
 };
 
 const DEFAULT_PARTY_COLOR = "#667085";
@@ -67,6 +57,7 @@ function tallyParties(rows: SummaryRow[]): PartyTally[] {
     tally.set(partyCode, {
       code: partyCode,
       color: color || DEFAULT_PARTY_COLOR,
+      iconUrl: getPartyIconUrl(partyCode),
       leading: 1,
       won: 0
     });
@@ -115,6 +106,7 @@ export function parseSummaryJson(
         leadingCandidate: candidateName === "NA" ? undefined : candidateName,
         leadingPartyCode: partyCode === "NA" ? undefined : partyCode,
         color,
+        partyIconUrl: getPartyIconUrl(partyCode),
         status
       };
     });
@@ -182,7 +174,7 @@ function normalizeStatus(value: string): ResultStatus {
 }
 
 function partyCodeFromName(name: string) {
-  return PARTY_CODE_BY_NAME[name] ?? undefined;
+  return getPartyCodeFromName(name);
 }
 
 export function parseStatewiseHtml(html: string, stateCode: string): HtmlResult {
@@ -283,6 +275,7 @@ function rebuildPartyTallies(constituencies: ConstituencyResult[], fallback: Par
       code,
       name: result.leadingPartyName,
       color: result.color ?? DEFAULT_PARTY_COLOR,
+      iconUrl: getPartyIconUrl(code, result.leadingPartyName),
       leading: result.status === "Won" ? 0 : 1,
       won: result.status === "Won" ? 1 : 0
     });
@@ -305,7 +298,10 @@ export function mergeHtmlIntoState(state: ElectionState, htmlResult?: HtmlResult
       ...htmlConstituency,
       leadingPartyCode: htmlConstituency.leadingPartyCode ?? jsonConstituency?.leadingPartyCode,
       trailingPartyCode: htmlConstituency.trailingPartyCode ?? jsonConstituency?.trailingPartyCode,
-      color: jsonConstituency?.color ?? htmlConstituency.color
+      color: jsonConstituency?.color ?? htmlConstituency.color,
+      partyIconUrl:
+        jsonConstituency?.partyIconUrl ??
+        getPartyIconUrl(htmlConstituency.leadingPartyCode, htmlConstituency.leadingPartyName)
     };
   });
 
