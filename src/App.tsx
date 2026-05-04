@@ -153,6 +153,20 @@ function percent(part: number, total: number) {
   return Math.round((part / total) * 100);
 }
 
+function roundLabel(result: ConstituencyResult) {
+  if (result.roundCurrent === undefined || result.roundTotal === undefined) return "Round -";
+  return `Round ${result.roundCurrent}/${result.roundTotal}`;
+}
+
+function roundPercent(result: ConstituencyResult) {
+  const value =
+    result.roundProgressPct ??
+    (result.roundCurrent !== undefined && result.roundTotal !== undefined
+      ? percent(result.roundCurrent, result.roundTotal)
+      : 0);
+  return Math.max(0, Math.min(value, 100));
+}
+
 function OverallCharts({ state }: { state: ElectionState }) {
   const topParties = state.parties.slice(0, 8);
   const maxSeats = Math.max(...topParties.map((party) => party.leading + party.won), 1);
@@ -259,6 +273,8 @@ function RaceRow({
   compact?: boolean;
   onOpen: (result: ConstituencyResult) => void;
 }) {
+  const progressPct = roundPercent(result);
+
   return (
     <button className="race-row" type="button" onClick={() => onOpen(result)}>
       <div className="race-main">
@@ -266,9 +282,6 @@ function RaceRow({
           <span className="ac-number">AC {result.acNo}</span>
           <strong>{result.acName ?? `Constituency ${result.acNo}`}</strong>
         </div>
-        <span className={battleClass(result.battleLevel)}>
-          {getBattleLabel(result.battleLevel)}
-        </span>
       </div>
       <div className="candidate-line">
         <PartyIcon
@@ -285,11 +298,23 @@ function RaceRow({
       </div>
       {!compact && (
         <div className="race-meta">
-          <span>Margin {formatNumber(result.margin)}</span>
-          <span>Round {result.roundCurrent && result.roundTotal ? `${result.roundCurrent}/${result.roundTotal}` : "-"}</span>
           <span>{result.status ?? "Unknown"}</span>
         </div>
       )}
+      <div className="race-side">
+        <span className={battleClass(result.battleLevel)}>
+          {getBattleLabel(result.battleLevel)} - {formatNumber(result.margin)}
+        </span>
+        <div className="round-meter" aria-label={`${roundLabel(result)}, ${progressPct}% complete`}>
+          <div>
+            <span>{roundLabel(result)}</span>
+            <strong>{progressPct}%</strong>
+          </div>
+          <i>
+            <b style={{ width: `${progressPct}%` }} />
+          </i>
+        </div>
+      </div>
       <ChevronRight size={18} aria-hidden="true" />
     </button>
   );

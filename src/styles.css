@@ -528,7 +528,7 @@ footer a:hover {
 .race-row {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(118px, 150px) auto;
   gap: 7px 10px;
   width: 100%;
   border: 1px solid #ded8cf;
@@ -549,8 +549,17 @@ footer a:hover {
   min-width: 0;
 }
 
-.race-row > svg {
+.race-side {
   grid-column: 2;
+  grid-row: 1 / span 3;
+  display: grid;
+  align-content: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.race-row > svg {
+  grid-column: 3;
   grid-row: 1 / span 3;
   align-self: center;
   color: #8a949c;
@@ -575,6 +584,8 @@ footer a:hover {
   padding: 4px 7px;
   font-size: 0.72rem;
   font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .battle-critical {
@@ -611,6 +622,39 @@ footer a:hover {
   gap: 8px;
   color: #667085;
   font-size: 0.8rem;
+}
+
+.round-meter {
+  display: grid;
+  gap: 5px;
+  color: #4d5963;
+  font-size: 0.74rem;
+  font-weight: 760;
+}
+
+.round-meter > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 7px;
+}
+
+.round-meter strong {
+  color: #172026;
+}
+
+.round-meter i {
+  display: block;
+  overflow: hidden;
+  height: 7px;
+  border-radius: 999px;
+  background: #e4ded4;
+}
+
+.round-meter b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #1f7a5a;
 }
 
 .empty {
@@ -705,6 +749,28 @@ footer {
   padding: 22px 14px 36px;
   color: #667085;
   font-size: 0.82rem;
+}
+
+@media (max-width: 560px) {
+  .race-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .race-side {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    grid-template-columns: auto minmax(120px, 1fr);
+    align-items: center;
+  }
+
+  .race-row > svg {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+
+  .battle {
+    justify-self: start;
+  }
 }
 
 @media (min-width: 900px) {
