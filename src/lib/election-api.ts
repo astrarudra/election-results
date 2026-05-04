@@ -25,33 +25,14 @@ async function fetchText(url: string) {
   return response.text();
 }
 
-async function fetchSource(source: ElectionSource): Promise<ElectionState[]> {
+async function fetchSummarySource(source: ElectionSource): Promise<ElectionState[]> {
   const fetchedAt = new Date().toISOString();
   const payload = await fetchJson(source.summaryJsonUrl);
-  const summaryStates = parseSummaryJson(payload, source.summaryJsonUrl, fetchedAt);
-  const enrichedStates = await Promise.all(
-    summaryStates.map(async (state) => {
-      const detailUrl = source.statewiseHtmlUrl ?? deriveStatewiseUrl(source.summaryJsonUrl, state.stateCode);
-      try {
-        const firstHtml = await fetchText(detailUrl);
-        const pageUrls = extractStatewisePageUrls(firstHtml, detailUrl, state.stateCode);
-        const htmlPages = await Promise.all(
-          pageUrls.map(async (pageUrl) => (pageUrl === detailUrl ? firstHtml : fetchText(pageUrl)))
-        );
-        const htmlResult = combineHtmlResults(
-          htmlPages.map((html) => parseStatewiseHtml(html, state.stateCode))
-        );
-        return mergeHtmlIntoState(state, htmlResult);
-      } catch {
-        return state;
-      }
-    })
-  );
-  return enrichedStates;
+  return parseSummaryJson(payload, source.summaryJsonUrl, fetchedAt);
 }
 
 export async function fetchElectionSnapshot(sources: ElectionSource[]): Promise<ElectionSnapshot> {
-  const settled = await Promise.allSettled(sources.map(fetchSource));
+  const settled = await Promise.allSettled(sources.map(fetchSummarySource));
   const deduped = new Map<string, ElectionState>();
 
   settled.forEach((result) => {
@@ -81,4 +62,33 @@ export async function fetchElectionSnapshot(sources: ElectionSource[]): Promise<
   };
   writePreviousSnapshot(snapshot);
   return snapshot;
+}
+
+export async function fetchElectionStateDetails(state: ElectionState): Promise<ElectionState> {
+  if (!state.sourceUrl) {
+    return state;
+  }
+
+  const detailUrl = deriveStatewiseUrl(state.sourceUrl, state.stateCode);
+  const firstHtml = await fetchText(detailUrl);
+  const pageUrls = extractStatewisePageUrls(firstHtml, detailUrl, state.stateCode);
+  const htmlPages = await Promise.all(
+    pageUrls.map(async (pageUrl) => (pageUrl === detailUrl ? firstHtml : fetchText(pageUrl)))
+  );
+  const htmlResult = combineHtmlResults(
+    htmlPages.map((html) => parseStatewiseHtml(html, state.stateCode))
+  );
+  const enrichedState = mergeHtmlIntoState(state, htmlResult);
+  const previous = readPreviousSnapshot();
+  const [stateWithDiff] = applySnapshotDiff([enrichedState], previous);
+
+  if (previous) {
+    const otherStates = previous.states.filter((item) => item.stateCode !== state.stateCode);
+    writePreviousSnapshot({
+      updatedAt: new Date().toISOString(),
+      states: [...otherStates, stateWithDiff]
+    });
+  }
+
+  return stateWithDiff;
 }

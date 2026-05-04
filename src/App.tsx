@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { DEFAULT_REFRESH_MS, CUSTOM_SOURCES_KEY } from "./data/sources";
 import { useCountdown } from "./hooks/use-countdown";
-import { useElectionData } from "./hooks/use-election-data";
+import { useElectionData, useElectionStateDetails } from "./hooks/use-election-data";
 import { compareBattleResults, getBattleLabel } from "./lib/battle";
 import {
   getRegisteredSources,
@@ -330,12 +330,14 @@ function ConstituencyList({
   results,
   search,
   filter,
-  onOpen
+  onOpen,
+  detailsLoading
 }: {
   results: ConstituencyResult[];
   search: string;
   filter: FilterMode;
   onOpen: (result: ConstituencyResult) => void;
+  detailsLoading: boolean;
 }) {
   const normalizedSearch = search.trim().toLowerCase();
   const filtered = results
@@ -378,6 +380,11 @@ function ConstituencyList({
           <h2>{filtered.length} results</h2>
         </div>
       </div>
+      {detailsLoading && (
+        <div className="detail-loading">
+          <Clock3 size={16} /> Loading constituency names, margins, and rounds...
+        </div>
+      )}
       <ConstituencyChart results={filtered} />
       <div className="race-list">
         {filtered.map((result) => (
@@ -515,7 +522,16 @@ export function App() {
   const [selectedResult, setSelectedResult] = useState<ConstituencyResult>();
 
   const states = query.data?.states ?? [];
-  const selectedState = states.find((state) => state.stateCode === selectedStateCode) ?? states[0];
+  const selectedSummaryState =
+    states.find((state) => state.stateCode === selectedStateCode) ?? states[0];
+  const detailQuery = useElectionStateDetails(selectedSummaryState);
+  const selectedState = detailQuery.data ?? selectedSummaryState;
+  const detailsLoading = Boolean(
+    selectedSummaryState && detailQuery.isFetching && !detailQuery.data
+  );
+  const detailsRefreshing = Boolean(
+    selectedSummaryState && detailQuery.isFetching && detailQuery.data
+  );
 
   useEffect(() => {
     const defaultState = states.find((state) => state.stateCode === DEFAULT_STATE_CODE) ?? states[0];
@@ -538,16 +554,22 @@ export function App() {
           <button
             className="refresh-button"
             type="button"
-            onClick={() => query.refetch()}
-            disabled={query.isFetching}
+            onClick={() => {
+              void query.refetch();
+              if (selectedSummaryState) void detailQuery.refetch();
+            }}
+            disabled={query.isFetching || detailQuery.isFetching}
           >
-            <RefreshCw size={18} className={query.isFetching ? "spin" : ""} />
-            <span>{query.isFetching ? "Refreshing" : "Refresh"}</span>
+            <RefreshCw size={18} className={query.isFetching || detailQuery.isFetching ? "spin" : ""} />
+            <span>{query.isFetching || detailQuery.isFetching ? "Refreshing" : "Refresh"}</span>
           </button>
         </div>
         <div className="status-bar">
           <span>Updated {formatTime(query.data?.updatedAt)}</span>
           <span>Next refresh in {countdown}s</span>
+          {detailsLoading && <span>Loading selected state details...</span>}
+          {detailsRefreshing && <span>Refreshing selected state details...</span>}
+          {detailQuery.isError && <span className="error-text">Detail refresh failed; showing summary data</span>}
           {query.isError && <span className="error-text">Refresh failed; showing last good data</span>}
         </div>
         <SourceSettings value={customSourceText} onChange={setCustomSourceText} />
@@ -621,6 +643,7 @@ export function App() {
               search={search}
               filter={filter}
               onOpen={setSelectedResult}
+              detailsLoading={detailsLoading}
             />
           </div>
 

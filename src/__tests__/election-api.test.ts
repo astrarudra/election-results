@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchElectionSnapshot } from "../lib/election-api";
+import { fetchElectionSnapshot, fetchElectionStateDetails } from "../lib/election-api";
 import type { ElectionSource } from "../types/election";
 
 const sourceA: ElectionSource = {
@@ -67,7 +67,11 @@ describe("election API", () => {
       leadingCandidate: "NEWER",
       leadingPartyCode: "INC"
     });
-    expect(snapshot.states[0].constituencies.find((result) => result.acNo === 2)).toMatchObject({
+    expect(snapshot.states[0].constituencies.find((result) => result.acNo === 2)?.acName).toBeUndefined();
+
+    const detailedState = await fetchElectionStateDetails(snapshot.states[0]);
+
+    expect(detailedState.constituencies.find((result) => result.acNo === 2)).toMatchObject({
       acName: "SECOND SEAT",
       margin: 10
     });

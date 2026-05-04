@@ -58,7 +58,7 @@ describe("App", () => {
     expect(screen.getByText("Race pressure")).toBeInTheDocument();
     expect(screen.getByText("Margin spread")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Search seat, candidate, party")).toBeInTheDocument();
-    expect(screen.getAllByText("Round 2/22").length).toBeGreaterThan(0);
-    expect(screen.getByText("Status known 1/1")).toBeInTheDocument();
+    expect((await screen.findAllByText("Round 2/22")).length).toBeGreaterThan(0);
+    expect(await screen.findByText("Status known 1/1")).toBeInTheDocument();
   });
 });
