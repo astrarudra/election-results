@@ -79,7 +79,7 @@ function PartyIcon({
   name?: string;
   color?: string;
   iconUrl?: string;
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
 }) {
   const label = code || name || "Party";
   const initials = getPartyInitials(code, name);
@@ -281,6 +281,15 @@ function RaceRow({
 
   return (
     <button className="race-row" type="button" onClick={() => onOpen(result)}>
+      <div className="race-party">
+        <PartyIcon
+          code={result.leadingPartyCode}
+          name={result.leadingPartyName}
+          color={result.color}
+          iconUrl={result.partyIconUrl}
+          size="lg"
+        />
+      </div>
       <div className="race-main">
         <div>
           <span className="ac-number">AC {result.acNo}</span>
@@ -288,13 +297,6 @@ function RaceRow({
         </div>
       </div>
       <div className="candidate-line">
-        <PartyIcon
-          code={result.leadingPartyCode}
-          name={result.leadingPartyName}
-          color={result.color}
-          iconUrl={result.partyIconUrl}
-          size="sm"
-        />
         <span>
           {result.leadingCandidate ?? "Awaiting update"}{" "}
           <b>{result.leadingPartyCode ?? result.leadingPartyName ?? ""}</b>
