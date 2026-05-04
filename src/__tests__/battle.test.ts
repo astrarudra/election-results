@@ -16,10 +16,10 @@ describe("adaptive battle classification", () => {
     ).toBe("critical");
   });
 
-  it("uses wider close thresholds before half the rounds are counted", () => {
+  it("marks unfinished margins up to 1000 as close", () => {
     expect(
       classifyBattle({
-        margin: 1800,
+        margin: 1000,
         roundProgressPct: 20,
         roundTotal: 20,
         status: "Result in Progress",
@@ -28,10 +28,10 @@ describe("adaptive battle classification", () => {
     ).toBe("close");
   });
 
-  it("uses tighter close thresholds after half the rounds are counted", () => {
+  it("marks unfinished margins over 1000 as watch", () => {
     expect(
       classifyBattle({
-        margin: 1500,
+        margin: 1001,
         roundProgressPct: 80,
         roundTotal: 20,
         status: "Result in Progress",

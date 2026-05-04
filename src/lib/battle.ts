@@ -21,8 +21,7 @@ export function classifyBattle(
   const isInProgress = current.status !== "Won";
   if (isInProgress && margin <= 500) return "critical";
 
-  const roundProgress = current.roundProgressPct ?? 0;
-  if (roundProgress >= 50 ? margin <= 1000 : margin <= 2000) return "close";
+  if (isInProgress && margin <= 1000) return "close";
 
   const narrowedBy =
     previous?.margin !== undefined && previous.margin > margin
