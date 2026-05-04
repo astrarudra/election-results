@@ -23,10 +23,13 @@ describe("election API", () => {
   it("deduplicates states with later sources winning", async () => {
     const fetchMock = vi.fn(async (url: string) => {
       if (url.includes("statewise")) {
+        const isSecondPage = url.includes("statewiseS032");
         return {
           ok: true,
           text: async () =>
-            `<table><thead><tr><th>Status Known For 1 out of 1 Constituencies</th></tr></thead><tbody></tbody></table>`
+            isSecondPage
+              ? `<table class="table"><thead><tr><th>Status Known For 2 out of 2 Constituencies</th></tr></thead><tbody><tr><td>SECOND SEAT</td><td>2</td><td>NEWER TWO</td><td><table><tbody><tr><td align="left">Indian National Congress</td></tr></tbody></table></td><td>TRAILER</td><td><table><tbody><tr><td align="left">Bharatiya Janata Party</td></tr></tbody></table></td><td>10</td><td>1/10</td><td>Result in Progress</td></tr></tbody></table>`
+              : `<table><thead><tr><th>Status Known For 2 out of 2 Constituencies</th></tr></thead><tbody></tbody></table><a class="page-link" href="statewiseS032.htm">2</a>`
         };
       }
 
@@ -40,6 +43,13 @@ describe("election API", () => {
                 "S03",
                 1,
                 url.includes("S25") ? "NEWER" : "OLDER",
+                "#19AAED"
+              ],
+              [
+                "INC",
+                "S03",
+                2,
+                "NEWER TWO",
                 "#19AAED"
               ]
             ],
@@ -56,6 +66,10 @@ describe("election API", () => {
     expect(snapshot.states[0].constituencies[0]).toMatchObject({
       leadingCandidate: "NEWER",
       leadingPartyCode: "INC"
+    });
+    expect(snapshot.states[0].constituencies.find((result) => result.acNo === 2)).toMatchObject({
+      acName: "SECOND SEAT",
+      margin: 10
     });
   });
 });

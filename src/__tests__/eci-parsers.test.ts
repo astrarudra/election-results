@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  combineHtmlResults,
+  extractStatewisePageUrls,
   mergeHtmlIntoState,
   parseStatewiseHtml,
   parseSummaryJson
@@ -101,5 +103,28 @@ describe("ECI parsers", () => {
       leadingPartyCode: "BJP",
       color: "#ff944d"
     });
+  });
+
+  it("discovers and combines paginated statewise detail pages", () => {
+    const pageUrls = extractStatewisePageUrls(
+      `<a class="page-link" href="statewiseS251.htm">1</a><a class="page-link" href="statewiseS252.htm">2</a>`,
+      "https://results.eci.gov.in/ResultAcGenMay2026/statewiseS251.htm",
+      "S25"
+    );
+
+    expect(pageUrls).toEqual([
+      "https://results.eci.gov.in/ResultAcGenMay2026/statewiseS251.htm",
+      "https://results.eci.gov.in/ResultAcGenMay2026/statewiseS252.htm"
+    ]);
+
+    const combined = combineHtmlResults([
+      parseStatewiseHtml(htmlSnippet, "S25"),
+      parseStatewiseHtml(
+        htmlSnippet.replace(/ALIPURDUARS/g, "MEKLIGANJ").replace(/>12</g, ">1<"),
+        "S25"
+      )
+    ]);
+
+    expect(combined?.constituencies.some((result) => result.acName === "MEKLIGANJ")).toBe(true);
   });
 });

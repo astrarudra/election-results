@@ -15,7 +15,7 @@ type SummaryPayload = Record<
   }
 >;
 
-type HtmlResult = {
+export type HtmlResult = {
   stateCode: string;
   statusKnown?: number;
   totalConstituencies?: number;
@@ -229,6 +229,38 @@ export function parseStatewiseHtml(html: string, stateCode: string): HtmlResult 
     statusKnown,
     totalConstituencies,
     constituencies
+  };
+}
+
+export function extractStatewisePageUrls(html: string, baseUrl: string, stateCode: string) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  const pagePattern = new RegExp(`^statewise${stateCode}\\d+\\.htm$`, "i");
+  const urls = Array.from(doc.querySelectorAll<HTMLAnchorElement>("a[href]"))
+    .map((anchor) => anchor.getAttribute("href") ?? "")
+    .filter((href) => pagePattern.test(href))
+    .map((href) => new URL(href, baseUrl).toString());
+
+  return Array.from(new Set([baseUrl, ...urls]));
+}
+
+export function combineHtmlResults(results: HtmlResult[]): HtmlResult | undefined {
+  if (results.length === 0) return undefined;
+
+  const byKey = new Map<string, ConstituencyResult>();
+  results.forEach((result) => {
+    result.constituencies.forEach((constituency) => {
+      byKey.set(constituencyKey(constituency), constituency);
+    });
+  });
+
+  const first = results[0];
+  return {
+    stateCode: first.stateCode,
+    statusKnown: results.find((result) => result.statusKnown !== undefined)?.statusKnown,
+    totalConstituencies: results.find((result) => result.totalConstituencies !== undefined)
+      ?.totalConstituencies,
+    constituencies: Array.from(byKey.values()).sort((a, b) => a.acNo - b.acNo)
   };
 }
 

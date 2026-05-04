@@ -214,7 +214,7 @@ function RaceRow({
       <div className="race-main">
         <div>
           <span className="ac-number">AC {result.acNo}</span>
-          <strong>{result.acName ?? result.leadingCandidate ?? `Constituency ${result.acNo}`}</strong>
+          <strong>{result.acName ?? `Constituency ${result.acNo}`}</strong>
         </div>
         <span className={battleClass(result.battleLevel)}>
           {getBattleLabel(result.battleLevel)}
@@ -483,6 +483,13 @@ function SourceSettings({
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
       />
+      <p className="source-note">
+        Data from{" "}
+        <a href="https://results.eci.gov.in/" target="_blank" rel="noreferrer">
+          results.eci.gov.in
+        </a>
+        .
+      </p>
       <button
         type="button"
         onClick={() => {
@@ -622,7 +629,11 @@ export function App() {
 
       <footer>
         <span>
-          Data is fetched from ECI public result pages and displayed as live trends until final Form-20 data is available.
+          Data from{" "}
+          <a href="https://results.eci.gov.in/" target="_blank" rel="noreferrer">
+            results.eci.gov.in
+          </a>
+          ; displayed as live trends until final Form-20 data is available.
         </span>
         <a href="https://github.com/astrarudra" target="_blank" rel="noreferrer">
           Created by Rudra Roy

@@ -1,4 +1,10 @@
-import { parseSummaryJson, parseStatewiseHtml, mergeHtmlIntoState } from "./eci-parsers";
+import {
+  combineHtmlResults,
+  extractStatewisePageUrls,
+  mergeHtmlIntoState,
+  parseStatewiseHtml,
+  parseSummaryJson
+} from "./eci-parsers";
 import { deriveStatewiseUrl } from "./source-registry";
 import { applySnapshotDiff, readPreviousSnapshot, writePreviousSnapshot } from "./snapshot";
 import type { ElectionSnapshot, ElectionSource, ElectionState } from "../types/election";
@@ -27,8 +33,15 @@ async function fetchSource(source: ElectionSource): Promise<ElectionState[]> {
     summaryStates.map(async (state) => {
       const detailUrl = source.statewiseHtmlUrl ?? deriveStatewiseUrl(source.summaryJsonUrl, state.stateCode);
       try {
-        const html = await fetchText(detailUrl);
-        return mergeHtmlIntoState(state, parseStatewiseHtml(html, state.stateCode));
+        const firstHtml = await fetchText(detailUrl);
+        const pageUrls = extractStatewisePageUrls(firstHtml, detailUrl, state.stateCode);
+        const htmlPages = await Promise.all(
+          pageUrls.map(async (pageUrl) => (pageUrl === detailUrl ? firstHtml : fetchText(pageUrl)))
+        );
+        const htmlResult = combineHtmlResults(
+          htmlPages.map((html) => parseStatewiseHtml(html, state.stateCode))
+        );
+        return mergeHtmlIntoState(state, htmlResult);
       } catch {
         return state;
       }
